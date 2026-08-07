@@ -108,6 +108,13 @@ class SysfsPollingOneShotSensor : public OneShotSensor {
     virtual void fillEventData(Event& event);
     virtual bool readFd(const int fd);
 
+    /*
+     * Decides whether a detected gesture may be posted to userspace.
+     * A returning false consumes the pending kernel event without posting
+     * it and keeps the subscription armed for the next gesture.
+     */
+    virtual bool shouldDeliverEvent() { return true; }
+
   protected:
     virtual void run() override;
 

@@ -1,0 +1,30 @@
+//
+// Copyright (C) 2026 The LineageOS Project
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+cc_binary {
+    name: "vendor.xiaomi.hw.touchfeature@1.0-service",
+    defaults: ["hidl_defaults"],
+    init_rc: ["vendor.xiaomi.hw.touchfeature@1.0-service.rc"],
+    vintf_fragments: ["vendor.xiaomi.hw.touchfeature@1.0-service.xml"],
+    vendor: true,
+    relative_install_path: "hw",
+    srcs: [
+        "TouchFeature.cpp",
+        "service.cpp",
+    ],
+    shared_libs: [
+        "libbase",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "vendor.xiaomi.hw.touchfeature@1.0",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+        "-Wextra",
+    ],
+}

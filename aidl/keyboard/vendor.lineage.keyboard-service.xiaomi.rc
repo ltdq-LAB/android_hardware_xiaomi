@@ -1,0 +1,7 @@
+service vendor.keyboardnanoapp-aidl /vendor/bin/hw/vendor.lineage.keyboard-service.xiaomi
+    class hal
+    interface aidl vendor.xiaomi.hardware.keyboardnanoapp_aidl.IKeyboardNanoapp_aidl/default
+    user system
+    group system input
+    task_profiles ServiceCapacityLow
+    onrestart write /sys/devices/virtual/nanodev/nanodev0/_inputenable 0

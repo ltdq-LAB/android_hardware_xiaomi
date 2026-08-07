@@ -327,8 +327,18 @@ void SysfsPollingOneShotSensor::run() {
             }
 
             if (mPolls[1].revents == mPolls[1].events && readFd(mPollFd)) {
-                activate(false, false, false);
-                mCallback->postEvents(readEvents(), isWakeUpSensor());
+                if (shouldDeliverEvent()) {
+                    activate(false, false, false);
+                    mCallback->postEvents(readEvents(), isWakeUpSensor());
+                } else {
+                    /*
+                     * The pending event was consumed above but must not
+                     * reach userspace. Keep the sensor armed so a later
+                     * gesture is still delivered.
+                     */
+                    ALOGI("%s gesture suppressed by hardware gating",
+                          mSensorInfo.name.c_str());
+                }
             } else if (mPolls[0].revents == mPolls[0].events) {
                 readBool(mWaitPipeFd[0], false /* seek */);
             }

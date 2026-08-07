@@ -1,0 +1,4 @@
+service touchfeature_v2-hal-1-0 /vendor/bin/hw/vendor.xiaomi.hw.touchfeature@1.0-service
+    class hal
+    user system
+    group system input

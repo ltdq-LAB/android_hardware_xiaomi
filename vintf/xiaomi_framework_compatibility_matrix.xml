@@ -237,6 +237,14 @@
             <instance>default</instance>
         </interface>
     </hal>
+    <hal format="aidl" optional="true">
+        <name>vendor.xiaomi.hardware.keyboardnanoapp_aidl</name>
+        <version>1</version>
+        <interface>
+            <name>IKeyboardNanoapp_aidl</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
     <hal format="hidl" optional="true">
         <name>vendor.xiaomi.hardware.mfidoca</name>
         <version>1.0</version>

@@ -59,5 +59,6 @@ cc_binary {
         "android.hardware.sensors@1.0-convert",
         "android.hardware.sensors@2.X-multihal",
         "android.hardware.sensors@aidl-multihal",
+        "sensors.xiaomi.lid-state-tracker",
     ],
 }

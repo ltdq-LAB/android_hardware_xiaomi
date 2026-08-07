@@ -1,19 +1,26 @@
 //
-// Copyright (C) 2022 The LineageOS Project
+// Copyright (C) 2026 The LineageOS Project
 //
 // SPDX-License-Identifier: Apache-2.0
 //
 
-filegroup {
-    name: "xiaomi_sensors_v2_base_srcs",
-    srcs: ["Sensor.cpp"],
+cc_library_static {
+    name: "sensors.xiaomi.lid-state-tracker",
+    defaults: ["hidl_defaults"],
+    srcs: ["LidStateTracker.cpp"],
+    shared_libs: [
+        "liblog",
+    ],
+    export_include_dirs: ["."],
+    vendor: true,
 }
 
 cc_library_shared {
-    name: "sensors.xiaomi.v2",
+    name: "sensors.xiaomi.lcd.v2",
     defaults: ["hidl_defaults"],
     srcs: [
-        "Sensor.cpp",
+        ":xiaomi_sensors_v2_base_srcs",
+        "LidStateTracker.cpp",
         "SensorsSubHal.cpp",
     ],
     shared_libs: [
@@ -34,7 +41,7 @@ cc_library_shared {
         "android.hardware.sensors@2.X-multihal",
     ],
     cflags: [
-        "-DLOG_TAG=\"sensors.xiaomi\"",
+        "-DLOG_TAG=\"sensors.xiaomi.lcd\"",
     ],
     vendor: true,
 }

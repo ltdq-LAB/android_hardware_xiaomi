@@ -18,6 +18,11 @@
 
 #include <cinttypes>
 
+#include <cutils/properties.h>
+#include <log/log.h>
+
+#include "LidStateTracker.h"
+
 namespace android {
 namespace hardware {
 namespace sensors {
@@ -43,6 +48,12 @@ void HalProxyCallbackBase::postEvents(const std::vector<V2_1::Event>& events,
     if (events.empty() || !mCallback->areThreadsRunning()) return;
     size_t numWakeupEvents;
     std::vector<V2_1::Event> processedEvents = processEvents(events, &numWakeupEvents);
+    if (numWakeupEvents == 0 && wakelock.isLocked()) {
+        // A wakeup event in the batch was dropped by processEvents (e.g. the
+        // lid-gated pickup pulse); release the wakelock it carried.
+        mRefCounter->decrementRefCountAndMaybeReleaseWakelock(1, wakelock.mCreatedAtTimeNs);
+        wakelock.mLocked = false;
+    }
     if (numWakeupEvents > 0) {
         ALOG_ASSERT(wakelock.isLocked(),
                     "Wakeup events posted while wakelock unlocked for subhal"
@@ -75,6 +86,20 @@ std::vector<V2_1::Event> HalProxyCallbackBase::processEvents(const std::vector<V
         const V2_1::SensorInfo& sensor = mCallback->getSensorInfo(event.sensorHandle);
 
         if (sensor.type == V2_1::SensorType::PICK_UP_GESTURE && event.u.scalar != 1) {
+            continue;
+        }
+
+        /*
+         * The doze pickup pulse is gated on the keyboard-cover Hall switch:
+         * with the cover closed, picking the tablet up must not light the
+         * display, so the open cover is the precondition for this wake path.
+         * Enabled with ro.vendor.sensors.xiaomi.pickup_lid_gate.
+         */
+        static const bool gated = property_get_bool("ro.vendor.sensors.xiaomi.pickup_lid_gate",
+                                                    false);
+        if (sensor.type == V2_1::SensorType::PICK_UP_GESTURE && gated &&
+            !V2_1::subhal::implementation::LidStateTracker::get().isLidOpen()) {
+            ALOGI("Pickup gesture suppressed: keyboard cover is closed");
             continue;
         }
 
